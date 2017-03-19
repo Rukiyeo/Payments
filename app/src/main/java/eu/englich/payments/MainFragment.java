@@ -2,26 +2,21 @@ package eu.englich.payments;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import database.PaymentDAO;
-import model.Payment;
+import eu.englich.payments.database.PaymentDAO;
+import eu.englich.payments.database.model.Payment;
 
 /**
  * Created by Christoph Englich on 19.03.17.
@@ -47,6 +42,12 @@ public class MainFragment extends Fragment {
         listAdapter = new PaymentAdapter();
         listView.setAdapter(listAdapter);
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        listAdapter.notifyDataSetChanged();
     }
 
     private class PaymentAdapter extends BaseAdapter {
@@ -75,7 +76,9 @@ public class MainFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.row_payment, parent);
+
+            if (convertView == null)
+                convertView = layoutInflater.inflate(R.layout.row_payment, null);
 
             TextView category = (TextView) convertView.findViewById(R.id.rowPaymentCategory);
             TextView time = (TextView) convertView.findViewById(R.id.rowPaymentTime);
@@ -88,6 +91,12 @@ public class MainFragment extends Fragment {
             amount.setText(String.valueOf(payment.getAmount()));
 
             return convertView;
+        }
+
+        @Override
+        public void notifyDataSetChanged() {
+            payments = PaymentDAO.getInstance(getContext()).getAllPayments();
+            super.notifyDataSetChanged();
         }
 
         private String formatDate(long timestamp) {
