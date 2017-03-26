@@ -12,67 +12,62 @@
 
 
     <TextView
-            android:text="@string/amount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/paymentLabelAmount"
-            android:textSize="24sp"
-            android:layout_marginTop="6dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:id="@+id/paymentLabelAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="@string/amount"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="24sp"
+        />
 
-            />
+    <EditText
+        android:id="@+id/paymentInputAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="12dp"
+        android:digits="01234567890.-"
+        android:ems="10"
+        android:inputType="numberDecimal" />
+    
+    <TextView
+        android:id="@+id/paymentLabelCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/paymentInputAmount"
+        android:layout_marginTop="18dp"
+        android:text="@string/category"
+        android:textSize="24sp" />
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:ems="10"
-            android:layout_marginLeft="12dp"
-            android:id="@+id/paymentInputAmount"
-            android:digits="01234567890.-"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"/>
-
-
-        <TextView
-            android:text="@string/category"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/paymentLabelCategory"
-            android:textSize="24sp"
-            android:layout_marginTop="18dp"
-            android:layout_below="@id/paymentInputAmount"
-            />
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:ems="10"
-            android:layout_marginTop="12dp"
-            android:layout_marginLeft="12dp"
-            android:id="@+id/paymentInputCategory"
-            android:layout_below="@id/paymentInputAmount"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            />
+    <EditText
+        android:id="@+id/paymentInputCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/paymentInputAmount"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        android:ems="10"
+        android:inputType="textPersonName" />
 
     <Button
         android:id="@+id/paymentSaveButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/save_payment"
         android:layout_below="@id/paymentInputCategory"
-        android:layout_marginTop="12dp"/>
+        android:layout_marginTop="12dp"
+        android:text="@string/save_payment" />
 
     <Button
         android:id="@+id/paymentCancelButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/cancel"
         android:layout_below="@id/paymentSaveButton"
         android:layout_marginTop="12dp"
-        />
+        android:text="@string/cancel" />
 
 
 </RelativeLayout>
