@@ -1,10 +1,12 @@
 package eu.englich.payments;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,7 +18,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +42,23 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        currentFragment = getFragmentManager().findFragmentById(R.id.fragment_container);
+
+        if (currentFragment == null) {
+            currentFragment = MainFragment.newInstance();
+            getFragmentManager().beginTransaction().replace(
+                    R.id.fragment_container, currentFragment).commit();
+        }
     }
 
     @Override
@@ -72,5 +93,45 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_overview) {
+            if (!(currentFragment instanceof MainFragment)) {
+                currentFragment = MainFragment.newInstance();
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, currentFragment);
+                fragmentTransaction.commit();
+            }
+        } else if (id == R.id.nav_add) {
+            if (!PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getBoolean("lock_payment", false)) {
+                Intent intent = new Intent(MainActivity.this, PaymentActivity.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(MainActivity.this, R.string.payment_locked, Toast.LENGTH_LONG).show();
+            }
+        } else if (id == R.id.nav_example) {
+            if (!(currentFragment instanceof ExampleFragment)) {
+                currentFragment = ExampleFragment.newInstance("Bla", "Onomatopoesie");
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, currentFragment);
+                fragmentTransaction.commit();
+            }
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }
