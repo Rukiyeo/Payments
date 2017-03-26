@@ -31,7 +31,7 @@
         android:digits="01234567890.-"
         android:ems="10"
         android:inputType="numberDecimal" />
-    
+
     <TextView
         android:id="@+id/paymentLabelCategory"
         android:layout_width="wrap_content"

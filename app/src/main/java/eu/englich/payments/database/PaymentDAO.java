@@ -64,9 +64,16 @@ public class PaymentDAO {
 
     public Payment getPayment(long id) {
         open();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TBL + " WHERE id=?",  new String[]{String.valueOf(id)});
-        if (cursor.moveToFirst()) {
-            return readFromCursor(cursor);
+        Cursor cursor = db.query(TBL, //Table
+                null, //null returns all columns / fields
+                TBL_ID + "=?", //Selection (WHERE [field]=?)
+                new String[]{String.valueOf(id)}, //Selection arguments (selection by id)
+                null, //GroupBy (GROUPY BY [field], e. g. in case of sum([field]))
+                null, //Having, Selection on Group By fields (HAVING [field]=1)
+                null, //Limit, limits the selection, e. g. 10 for 10 entries
+                null); //CancelationSignal
+        if (cursor.moveToFirst()) { //if data is available
+            return readFromCursor(cursor); //read the data
         }
         cursor.close();
         close();
@@ -75,10 +82,48 @@ public class PaymentDAO {
 
     public List<Payment> getAllPayments() {
         open();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TBL + " ORDER BY " + TBL_TSTMP + " DESC",  null);
+
+        Cursor cursor = db.query(TBL, //Table
+                new String[] {TBL_ID, TBL_CATEGORY, TBL_AMOUNT, TBL_TSTMP}, //Fields, null would also return all columns / fields
+                null, //Selection (WHERE [field]=?)
+                null, //Selection arguments (replaces ? in Selection)
+                null, //GroupBy (GROUPY BY [field], e. g. in case of sum([field]))
+                null, //Having, Selection on Group By fields (HAVING [field]=1)
+                null, //Limit, limits the selection, e. g. 10 for 10 entries
+                null); //CancelationSignal
+
+        //example custom select query
+        //Cursor cursor = db.rawQuery("SELECT * FROM " + TBL + " ORDER BY " + TBL_TSTMP + " DESC",  null);
 
         List<Payment> payments = new LinkedList<>();
-        if (cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) { // read in the the result row by row, if data available
+            while (!cursor.isAfterLast()) {
+                payments.add(readFromCursor(cursor));
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        close();
+        return payments;
+    }
+
+    public List<Payment> getAllPaymentsAfter(long timestamp) {
+        open();
+
+        Cursor cursor = db.query(TBL, //Table
+                new String[] {TBL_ID, TBL_CATEGORY, TBL_AMOUNT, TBL_TSTMP}, //Fields, null would also return all columns / fields
+                TBL_TSTMP + ">=" + timestamp, //Selection, can't do >= with selection arguments
+                null, //Selection arguments (replaces ? in Selection)
+                null, //GroupBy (GROUPY BY [field], e. g. in case of sum([field]))
+                null, //Having, Selection on Group By fields (HAVING [field]=1)
+                null, //Limit, limits the selection, e. g. 10 for 10 entries
+                TBL_TSTMP + " ASC"); //Order by timestamp, ascending
+
+        //example custom select query
+        //Cursor cursor = db.rawQuery("SELECT * FROM " + TBL + " ORDER BY " + TBL_TSTMP + " DESC",  null);
+
+        List<Payment> payments = new LinkedList<>();
+        if (cursor.moveToFirst()) { // read in the the result row by row, if data available
             while (!cursor.isAfterLast()) {
                 payments.add(readFromCursor(cursor));
                 cursor.moveToNext();
@@ -95,6 +140,25 @@ public class PaymentDAO {
         if (ret > 0) {
             payment.setId(ret);
         }
+        close();
+        return ret;
+    }
+
+    public int updatePayment(Payment payment) {
+        open();
+        int ret = db.update(TBL, //Table
+                prepareValues(payment), //Values
+                TBL_ID + "=?", //Selection (what data to update)
+                new String[]{String.valueOf(payment.getId())}); // selection by id
+        close();
+        return ret;
+    }
+
+    public int deletePayment(Payment payment) {
+        open();
+        int ret = db.delete(TBL,
+                TBL_ID + "=?", //Selection (what data to delete)
+                new String[]{String.valueOf(payment.getId())}); // selection by id
         close();
         return ret;
     }
@@ -122,7 +186,7 @@ public class PaymentDAO {
         payment.setTime(cursor.getLong(index));
 
         index = cursor.getColumnIndex(TBL_AMOUNT);
-        payment.setAmount(cursor.getInt(index));
+        payment.setAmount(cursor.getDouble(index));
 
         index = cursor.getColumnIndex(TBL_CATEGORY);
         payment.setCategory(cursor.getString(index));
