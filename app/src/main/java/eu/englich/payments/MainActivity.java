@@ -65,27 +65,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getFragmentManager().beginTransaction().replace(
                     R.id.fragment_container, currentFragment).commit();
         }
-
-        Intent resultIntent = new Intent(this, MainActivity.class);
-        PendingIntent contentIntent =
-                PendingIntent.getActivity(
-                        this,
-                        0,
-                        resultIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-
-        Notification.Builder notificationBuilder =
-                new Notification.Builder(this);
-        notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
-        notificationBuilder.setContentTitle("New Payment");
-        notificationBuilder.setContentText("You got a new Payment");
-        notificationBuilder.setContentIntent(contentIntent);
-
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(1, notificationBuilder.build());
-
     }
 
     @Override
