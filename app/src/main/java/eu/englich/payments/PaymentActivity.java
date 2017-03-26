@@ -1,6 +1,8 @@
 package eu.englich.payments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -21,7 +23,26 @@ public class PaymentActivity extends Activity {
         findViewById(R.id.paymentCancelButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                finish();
+                                break;
+
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                //do nothing, stay on page
+                                break;
+                        }
+                    }
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(PaymentActivity.this);
+                builder.setMessage(R.string.confirm_question);
+                builder.setPositiveButton(R.string.yes, dialogClickListener);
+                builder.setNegativeButton(R.string.no, dialogClickListener);
+                builder.show();
             }
         });
 
@@ -39,11 +60,17 @@ public class PaymentActivity extends Activity {
                             payment.setCategory(cat);
                             payment.setTime(System.currentTimeMillis());
                             PaymentDAO.getInstance(PaymentActivity.this).addPayment(payment);
+                            Toast.makeText(PaymentActivity.this, R.string.save_payment_message, Toast.LENGTH_SHORT).show();
+                            finish();
                         } catch (NumberFormatException e) {
                             Toast.makeText(PaymentActivity.this, R.string.amount_missing, Toast.LENGTH_LONG).show();
                         }
+                    } else {
+
+                        Toast.makeText(PaymentActivity.this,
+                                R.string.amount_missing, Toast.LENGTH_LONG).show();
+
                     }
-                    finish();
                 }
             }
         );

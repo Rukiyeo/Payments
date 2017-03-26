@@ -3,9 +3,14 @@ package eu.englich.payments;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -22,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private Fragment currentFragment;
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +65,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getFragmentManager().beginTransaction().replace(
                     R.id.fragment_container, currentFragment).commit();
         }
+
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent =
+                PendingIntent.getActivity(
+                        this,
+                        0,
+                        resultIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
+        Notification.Builder notificationBuilder =
+                new Notification.Builder(this);
+        notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        notificationBuilder.setContentTitle("New Payment");
+        notificationBuilder.setContentText("You got a new Payment");
+        notificationBuilder.setContentIntent(contentIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(1, notificationBuilder.build());
+
     }
 
     @Override

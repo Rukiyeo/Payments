@@ -34,10 +34,9 @@
     <string name="hello_blank_fragment">Hello example fragment</string>
     <string name="stars">You voted with %1$d stars!</string>
 
-    <string-array name="spinner_options">
-        <item>A</item>
-        <item>B</item>
-        <item>C</item>
-        <item>D</item>
-    </string-array>
+    <string name="save_payment_message">Payment data saved</string>
+
+    <string name="confirm_question">"Are you sure?"</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

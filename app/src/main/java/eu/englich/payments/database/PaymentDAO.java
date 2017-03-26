@@ -30,7 +30,6 @@ public class PaymentDAO {
             + TBL_CATEGORY + " TEXT)";
 
     private static PaymentDAO instance;
-
     private DatabaseHelper dbHelper;
     private SQLiteDatabase db;
 
@@ -42,7 +41,7 @@ public class PaymentDAO {
     }
 
     private PaymentDAO(Context context) {
-        dbHelper = new DatabaseHelper(context, null);
+        dbHelper = DatabaseHelper.getInstance(context);
     }
 
     public void open() throws SQLException {
@@ -52,7 +51,6 @@ public class PaymentDAO {
     public void close() {
         dbHelper.close();
     }
-
 
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TBL);
@@ -80,21 +78,16 @@ public class PaymentDAO {
         return null;
     }
 
-    public List<Payment> getAllPayments() {
+    public List<Payment> getAllPaymentsAfter(long timestamp) {
         open();
-
         Cursor cursor = db.query(TBL, //Table
                 new String[] {TBL_ID, TBL_CATEGORY, TBL_AMOUNT, TBL_TSTMP}, //Fields, null would also return all columns / fields
-                null, //Selection (WHERE [field]=?)
+                TBL_TSTMP + ">=" + timestamp, //Selection, can't do >= with selection arguments
                 null, //Selection arguments (replaces ? in Selection)
                 null, //GroupBy (GROUPY BY [field], e. g. in case of sum([field]))
                 null, //Having, Selection on Group By fields (HAVING [field]=1)
                 null, //Limit, limits the selection, e. g. 10 for 10 entries
-                null); //CancelationSignal
-
-        //example custom select query
-        //Cursor cursor = db.rawQuery("SELECT * FROM " + TBL + " ORDER BY " + TBL_TSTMP + " DESC",  null);
-
+                TBL_TSTMP + " ASC"); //Order by timestamp, ascending
         List<Payment> payments = new LinkedList<>();
         if (cursor.moveToFirst()) { // read in the the result row by row, if data available
             while (!cursor.isAfterLast()) {
@@ -107,17 +100,17 @@ public class PaymentDAO {
         return payments;
     }
 
-    public List<Payment> getAllPaymentsAfter(long timestamp) {
+    public List<Payment> getAllPayments() {
         open();
 
         Cursor cursor = db.query(TBL, //Table
                 new String[] {TBL_ID, TBL_CATEGORY, TBL_AMOUNT, TBL_TSTMP}, //Fields, null would also return all columns / fields
-                TBL_TSTMP + ">=" + timestamp, //Selection, can't do >= with selection arguments
+                null, //Selection (WHERE [field]=?)
                 null, //Selection arguments (replaces ? in Selection)
                 null, //GroupBy (GROUPY BY [field], e. g. in case of sum([field]))
                 null, //Having, Selection on Group By fields (HAVING [field]=1)
                 null, //Limit, limits the selection, e. g. 10 for 10 entries
-                TBL_TSTMP + " ASC"); //Order by timestamp, ascending
+                null); //CancelationSignal
 
         //example custom select query
         //Cursor cursor = db.rawQuery("SELECT * FROM " + TBL + " ORDER BY " + TBL_TSTMP + " DESC",  null);

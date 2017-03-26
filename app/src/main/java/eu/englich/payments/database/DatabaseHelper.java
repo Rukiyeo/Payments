@@ -12,11 +12,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "payments.db";
     private static final int DATABASE_VERSION = 1;
+    private static DatabaseHelper instance;
 
-    private Context context;
-
-    public DatabaseHelper(Context context, SQLiteDatabase.CursorFactory factory) {
+    private DatabaseHelper(Context context, SQLiteDatabase.CursorFactory factory) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
+    }
+
+    public static DatabaseHelper getInstance(Context context) {
+        if (instance == null) {
+            instance = new DatabaseHelper(context, null);
+        }
+        return instance;
     }
 
     @Override
@@ -28,6 +34,4 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         PaymentDAO.getInstance(null).onUpgrade(db, oldVersion, newVersion);
     }
-
-
 }
